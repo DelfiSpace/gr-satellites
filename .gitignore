@@ -1,3 +1,5 @@
 *~
 apps/*.py
 __pycache__
+
+build/
