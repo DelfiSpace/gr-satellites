@@ -60,6 +60,11 @@ def write_default_config(file):
         'password' : '',
     }
 
+    config['DelfiSpace'] = {
+        'user' : '',
+        'passphrase' : '',
+    }
+    
     with open(file, 'w') as f:
         config.write(f)
 

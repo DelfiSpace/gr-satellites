@@ -37,6 +37,7 @@ install(FILES
     satellites_decode_ra_code.block.yml
     satellites_decode_rs.block.yml
     satellites_decode_rs_ccsds.block.yml
+    satellites_delfispace_submitter.block.yml
     satellites_descrambler308.block.yml
     satellites_distributed_syncframe_soft.block.yml
     satellites_dstar_one_telemetry_parser.block.yml

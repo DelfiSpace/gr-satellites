@@ -1,0 +1,21 @@
+id: satellites_delfispace_submitter
+label: Delfi Space Telemetry Forwarder
+category: '[Satellites]/Misc'
+
+parameters:
+-   id: user
+    label: User
+    dtype: string
+-   id: password
+    label: Password
+    dtype: string
+
+inputs:
+-   domain: message
+    id: in
+
+templates:
+    imports: import satellites
+    make: satellites.delfispace_submitter(${user}, ${password}, ''${satellite}, '')
+
+file_format: 1

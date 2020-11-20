@@ -9,7 +9,7 @@
 #
 
 from gnuradio import gr, blocks
-from ... import submit, funcube_submit, pwsat2_submitter, bme_submitter, pdu_to_kiss
+from ... import submit, funcube_submit, pwsat2_submitter, bme_submitter, delfispace_submitter, pdu_to_kiss
 from ...utils.options_block import options_block
 
 class telemetry_submit(gr.hier_block2, options_block):
@@ -21,7 +21,7 @@ class telemetry_submit(gr.hier_block2, options_block):
     These are submitted to a telemetry server
 
     Args:
-        server: 'SatNOGS', 'FUNcube', 'PWSat', 'BME' or 'SIDS' (string)
+        server: 'SatNOGS', 'FUNcube', 'PWSat', 'BME', 'DelfiSpace' or 'SIDS' (string)
         norad: NORAD ID (int)
         port: TCP port to connect to (used by HIT) (str)
         url: SIDS URL (used by SIDS) (str)
@@ -54,6 +54,8 @@ class telemetry_submit(gr.hier_block2, options_block):
             satellites = {44830 : 'atl1', 44832 : 'smogp'}
             satellite = satellites[norad]
             self.submit = bme_submitter(config['BME']['user'], config['BME']['password'], satellite)
+        elif server == 'DelfiSpace':
+            self.submit = delfispace_submitter(config['DelfiSpace']['user'], config['DelfiSpace']['passphrase'], '')
         elif server == 'HIT':
             try:
                 self.tcp = blocks.socket_pdu('TCP_CLIENT', '127.0.0.1', port, 10000, False)

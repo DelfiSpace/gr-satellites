@@ -51,6 +51,7 @@ from .check_crc import check_crc
 from .check_eseo_crc import check_eseo_crc
 from .check_swiatowid_crc import check_swiatowid_crc
 from .check_tt64_crc import check_tt64_crc
+from .delfispace_submitter import delfispace_submitter
 from .eseo_line_decoder import eseo_line_decoder
 from .eseo_packet_crop import eseo_packet_crop
 from .fixedlen_tagger import fixedlen_tagger

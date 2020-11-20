@@ -51,6 +51,7 @@ GR_PYTHON_INSTALL(
     check_tt64_crc.py
     crc32c.py
     csp_header.py
+    delfispace_submitter.py
     ecss_pus.py
     eseo_line_decoder.py
     eseo_packet_crop.py
