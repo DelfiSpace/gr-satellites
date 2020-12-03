@@ -56,11 +56,15 @@ class delfispace_submitter(gr.basic_block):
         #if self.auth_token is None:
         #    print('Not uploading packet to BME, as we are not authenticated')
         #    return
-        packets = [{'timestamp': str(now), 'packet': frame.hex().upper()}]
+        packet = {}
+        packet['timestamp'] = str(now)
+        packet['packet'] = frame.hex().upper()
+        #packets = [{'timestamp': str(now), 'packet': frame.hex().upper()}]
         #auth_header = {'Authorization': 'Bearer ' + self.auth_token}
         use_header = {"User-Agent": "gr-satellite/"+satellites.__version__}
 
-        rpacket = requests.post(self.url+'submit', json={'packets':packets}, headers=use_header, timeout=10)
+        print("packet to send: " +json.dumps(packet))
+        rpacket = requests.post(self.url+'submit', json=json.dumps(packet), headers=use_header, timeout=10)
 
         #packet_resp = rpacket.json()
         if rpacket.status_code != 201:
