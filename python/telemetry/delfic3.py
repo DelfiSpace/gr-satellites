@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright 2018-2019 Daniel Estevez <daniel@destevez.net>
+# Copyright 2020 Stefano Speretta <s.speretta@tudelft.nl>
 #
 # This file is part of gr-satellites
 #
