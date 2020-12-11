@@ -40,6 +40,7 @@ GR_PYTHON_INSTALL(
     by70_1.py
     csp.py
     delfic3.py
+    delfipq.py
     dstar_one.py
     eseo.py
     fossasat.py

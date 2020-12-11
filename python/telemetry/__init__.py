@@ -28,6 +28,7 @@ from .by70_1 import by70_1
 from .csp import csp
 from .csp import csp_swapped
 from .delfic3 import delfic3
+from .delfipq import delfipq
 from .dstar_one import dstar_one
 from .eseo import eseo
 from .floripasat import floripasat
