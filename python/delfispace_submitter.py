@@ -59,22 +59,14 @@ class delfispace_submitter(gr.basic_block):
         packet = {}
         packet['timestamp'] = str(now)
         packet['packet'] = frame.hex().upper()
-        #packets = [{'timestamp': str(now), 'packet': frame.hex().upper()}]
-        #auth_header = {'Authorization': 'Bearer ' + self.auth_token}
         use_header = {"User-Agent": "gr-satellite/"+satellites.__version__}
-
-        print("packet to send: " +json.dumps(packet))
-        rpacket = requests.post(self.url+'submit', json=json.dumps(packet), headers=use_header, timeout=10)
-
-        #packet_resp = rpacket.json()
-        if rpacket.status_code != 201:
-        #    uploaded_packets = packet_resp["results"]
-        #    for p in uploaded_packets:
-        #        if 'error' in p:
-        #            print('Checksum error')
-        #else:
-            print("Error " + str(rpacket.status_code) + ": " + rpacket.text)
-                
+        try:
+            rpacket = requests.post(self.url+'submit', json=json.dumps(packet), headers=use_header, timeout=10)
+            if rpacket.status_code != 201:
+                print("Error " + str(rpacket.status_code) + ": " + rpacket.text)
+        except requests.exceptions.RequestException as e:
+           print(e)
+           
     def handle_msg(self, msg_pmt):
         now = datetime.datetime.utcnow()
         msg = pmt.cdr(msg_pmt)
