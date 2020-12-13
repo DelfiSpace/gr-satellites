@@ -40,7 +40,13 @@ OBCStatus = BitStruct(
     'InternalState' / BitsInteger(4),
     'SoftwareImage' / BitsInteger(4)
     )
-    
+
+SubsystemStatus = BitStruct(
+    Padding(4),
+    'SoftwareImage' / BitsInteger(4)
+    )
+
+# TODO: specify each bit / field
 ResetCause = Struct(
     'Cause' / BytesInteger(3)
     )   
@@ -59,14 +65,39 @@ OBCTlm = Struct(
     #'BoardTemperature'/ LinearAdapter(10, BytesInteger(2))
     )   
 
-#EPSTlm = Struct(
-#    'TLMHeader' / TLMHeader
-#    )  
-    
-Auxiliary = Struct(
-    Padding(6)
-    )
+EPSTlm = Struct(
+    'Status' / SubsystemStatus,
+    'BootCounter' / BytesInteger(1),
+    'ResetCause' / ResetCause,
+    'Uptime' / BytesInteger(4),
+    'TotalUptime'/ BytesInteger(4),
+    'TLMVersion'/ BytesInteger(1),
+    'MCUTemperature'/ LinearAdapter(10, BytesInteger(2)),
+    'EPS'/ BytesInteger(2)
+    )  
 
+ADBTlm = Struct(
+    'Status' / SubsystemStatus,
+    'BootCounter' / BytesInteger(1),
+    'ResetCause' / ResetCause,
+    'Uptime' / BytesInteger(4),
+    'TotalUptime'/ BytesInteger(4),
+    'TLMVersion'/ BytesInteger(1),
+    'MCUTemperature'/ LinearAdapter(10, BytesInteger(2)),
+    'ADB'/ BytesInteger(2)
+    ) 
+
+COMMSTlm = Struct(
+    'Status' / SubsystemStatus,
+    'BootCounter' / BytesInteger(1),
+    'ResetCause' / ResetCause,
+    'Uptime' / BytesInteger(4),
+    'TotalUptime'/ BytesInteger(4),
+    'TLMVersion'/ BytesInteger(1),
+    'MCUTemperature'/ LinearAdapter(10, BytesInteger(2)),
+    'COMMS'/ BytesInteger(2)
+    ) 
+    
 Beacon = Struct(
     'Destination' / Address,
     'Size' / BytesInteger(1),
@@ -75,10 +106,11 @@ Beacon = Struct(
     'MessageType' / msgType,
     'MessageOutcome' / msgOutcome,
     'TLMSource' / Address,
-    'tlm' / OBCTlm
-    #'tlm' / Switch(this.TLMSource, {
-    #    (1) : OBCTlm,
-    #    (2) : EPSTlm})
+    'tlm' / Switch(this.TLMSource, {
+        (Address.OBC) : OBCTlm,
+        (Address.EPS) : EPSTlm,
+        (Address.ADB) : ADBTlm,
+        (Address.COMMS) : COMMSTlm})
     ) 
            
 delfipq = Struct(
