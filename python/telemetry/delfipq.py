@@ -54,9 +54,27 @@ SubsystemStatus = BitStruct(
     'SoftwareImage' / BitsInteger(4)
     )
 
-# TODO: specify each bit / field
-ResetCause = Struct(
-    'Cause' / BytesInteger(3)
+ResetCause = BitStruct(
+    'SoftResetWDTTimerexpiration' / BitsInteger(1),
+    'CPULockUp' / BitsInteger(1),
+    'PORPowerSettle' / BitsInteger(1),
+    'PORClockSettle' / BitsInteger(1),
+    'VoltageAnomaly' / BitsInteger(1),
+    'HardResetWDTWrongPassword' / BitsInteger(1),
+    'HardResetWDTTimerexpiration' / BitsInteger(1),
+    'SystemResetOutput' / BitsInteger(1),
+   
+    'SysCTLReboot' / BitsInteger(1),
+    'NMIPin' / BitsInteger(1),
+    'ExitLPM4.5' / BitsInteger(1),
+    'ExitLPM3.5' / BitsInteger(1),
+    'BadBandGapReference' / BitsInteger(1),
+    'SupplySupervisorVccTrip' / BitsInteger(1),
+    'VCCDetectorTrip' / BitsInteger(1),
+    'SoftResetWDTWrongPassword' / BitsInteger(1),
+    
+    Padding(7),
+    'DCOShortCircuitFault' / BitsInteger(1)
     )   
 
 # verify single bits
@@ -115,15 +133,9 @@ COMMSSensorStatus = BitStruct(
     'PhasingTMPStatus' / sensorBitStatus,
     'AmplifierTMPStatus' / sensorBitStatus,
     Padding(2)
-    )
-                        
-OBCTlm = Struct(
-    'Status' / OBCStatus,
-    'BootCounter' / BytesInteger(1),
-    'ResetCause' / ResetCause,
-    'Uptime' / BytesInteger(4), # unit: s
-    'TotalUptime'/ BytesInteger(4),
-    'TLMVersion'/ BytesInteger(1),
+    )                        
+
+OBCTlmV2 = Struct(
     'MCUTemperature'/ LinearAdapter(10, BytesInteger(2)), # unit: degC
     'SensorsStatus' / OBCSensorStatus,
     'BusVoltage' / LinearAdapter(1000, BytesInteger(2)), # unit: V
@@ -131,13 +143,7 @@ OBCTlm = Struct(
     #'BoardTemperature'/ LinearAdapter(10, BytesInteger(2))
     )   
 
-EPSTlm = Struct(
-    'Status' / SubsystemStatus,
-    'BootCounter' / BytesInteger(1),
-    'ResetCause' / ResetCause,
-    'Uptime' / BytesInteger(4), # unit: s
-    'TotalUptime'/ BytesInteger(4),
-    'TLMVersion'/ BytesInteger(1),
+EPSTlmV2 = Struct(
     'MCUTemperature'/ LinearAdapter(10, BytesInteger(2)), # unit: degC
     'Status'/ EPSSensorStatus,
     'InternalINACurrent' / LinearAdapter(1000, BytesInteger(2)), # unit: A
@@ -191,14 +197,8 @@ EPSTlm = Struct(
     'CellXpVoltage' / LinearAdapter(1000, BytesInteger(2)), # unit: V
     #'CellXmVoltage' / LinearAdapter(1000, BytesInteger(2)), # unit: V
     )  
-
-ADBTlm = Struct(
-    'Status' / SubsystemStatus,
-    'BootCounter' / BytesInteger(1),
-    'ResetCause' / ResetCause,
-    'Uptime' / BytesInteger(4), # unit: s
-    'TotalUptime'/ BytesInteger(4),
-    'TLMVersion'/ BytesInteger(1),
+    
+ADBTlmV2 = Struct(
     'MCUTemperature'/ LinearAdapter(10, BytesInteger(2)), # unit: degC
     'SensorsStatus'/ ADBSensorStatus,
     'Current' / LinearAdapter(1000, BytesInteger(2)), # unit: A
@@ -206,13 +206,7 @@ ADBTlm = Struct(
     #'Temperature' / LinearAdapter(10, BytesInteger(2)), # unit: degC
     ) 
 
-COMMSTlm = Struct(
-    'Status' / SubsystemStatus,
-    'BootCounter' / BytesInteger(1),
-    'ResetCause' / ResetCause,
-    'Uptime' / BytesInteger(4), # unit: s
-    'TotalUptime'/ BytesInteger(4),
-    'TLMVersion'/ BytesInteger(1),
+COMMSTlmV2 = Struct(
     'MCUTemperature'/ LinearAdapter(10, BytesInteger(2)), # unit: degC
     'SensorsStatus'/ COMMSSensorStatus,
     'Voltage' / LinearAdapter(1000, BytesInteger(2)), # unit: V
@@ -223,10 +217,53 @@ COMMSTlm = Struct(
     'TransmitCurrent' / LinearAdapter(1000, BytesInteger(2)), # unit: A
     'AmplifierVoltage' / LinearAdapter(1000, BytesInteger(2)), # unit: V
     'AmplifierCurrent' / LinearAdapter(1000, BytesInteger(2)), # unit: A
-    'PhasingTemperature' / LinearAdapter(10, BytesInteger(2)), # unit: degC
+    'PhasingBoardTemperature' / LinearAdapter(10, BytesInteger(2)), # unit: degC
     #'AmplifierTemperature' / LinearAdapter(10, BytesInteger(2)), # unit: degC
     ) 
-    
+
+OBCTlm = Struct(
+    'Status' / OBCStatus,
+    'BootCounter' / BytesInteger(1),
+    'ResetCause' / ResetCause,
+    'Uptime' / BytesInteger(4), # unit: s
+    'TotalUptime'/ BytesInteger(4), # unit: s
+    'TLMVersion'/ BytesInteger(1),
+    'Telemetry' / Switch(this.TLMVersion, {
+        (2) : OBCTlmV2})
+    )
+
+EPSTlm = Struct(
+    'Status' / SubsystemStatus,
+    'BootCounter' / BytesInteger(1),
+    'ResetCause' / ResetCause,
+    'Uptime' / BytesInteger(4), # unit: s
+    'TotalUptime'/ BytesInteger(4),
+    'TLMVersion'/ BytesInteger(1),
+    'Telemetry' / Switch(this.TLMVersion, {
+        (2) : EPSTlmV2})
+    )
+
+ADBTlm = Struct(
+    'Status' / SubsystemStatus,
+    'BootCounter' / BytesInteger(1),
+    'ResetCause' / ResetCause,
+    'Uptime' / BytesInteger(4), # unit: s
+    'TotalUptime'/ BytesInteger(4),
+    'TLMVersion'/ BytesInteger(1),
+    'Telemetry' / Switch(this.TLMVersion, {
+        (2) : ADBTlmV2})
+    )
+
+COMMSTlm = Struct(
+    'Status' / SubsystemStatus,
+    'BootCounter' / BytesInteger(1),
+    'ResetCause' / ResetCause,
+    'Uptime' / BytesInteger(4), # unit: s
+    'TotalUptime' / BytesInteger(4),
+    'TLMVersion' / BytesInteger(1),
+    'Telemetry' / Switch(this.TLMVersion, {
+        (2) : COMMSTlmV2})
+    )
 Beacon = Struct(
     'Destination' / Address,
     'Size' / BytesInteger(1),
@@ -235,7 +272,7 @@ Beacon = Struct(
     'MessageType' / msgType,
     'MessageOutcome' / msgOutcome,
     'TLMSource' / Address,
-    'tlm' / Switch(this.TLMSource, {
+    'TelemetryHeader' / Switch(this.TLMSource, {
         (Address.OBC) : OBCTlm,
         (Address.EPS) : EPSTlm,
         (Address.ADB) : ADBTlm,
